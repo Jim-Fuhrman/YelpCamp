@@ -23,12 +23,29 @@ const seedDB = async () => {
     const random1000 = Math.floor(Math.random() * 1000)
     const price = Math.floor(Math.random() * 20) + 10
     const camp = new Campground({
+      author: "61aa850453075f21c01ece79",
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       title: `${sample(descriptors)} ${sample(places)}`,
-      /*image: "https://images.unsplash.com/photo-1518602164578-cd0074062767?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80", */
-      image: "https://source.unsplash.com/collection/483251",
       description: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Esse temporibus impedit commodi ullam, consectetur nisi perspiciatis magnam corporis nostrum culpa. Ex beatae error nobis praesentium iusto odit ad incidunt porro?",
-      price
+      price,
+      geometry: {
+        type: "Point",
+        coordinates: [-113.1331, 47.0202]
+      },
+      images: [
+        {
+          url: "https://res.cloudinary.com/jim-fuhrman-the-freelancer/image/upload/v1638891493/YelpCamp/poiha5wtbzwxnzyiwths.jpg",
+          filename: "YelpCamp/poiha5wtbzwxnzyiwths"
+        },
+        {
+          url: "https://res.cloudinary.com/jim-fuhrman-the-freelancer/image/upload/v1638891493/YelpCamp/rzmra5vxp2omltdh3clo.jpg",
+          filename: "YelpCamp/rzmra5vxp2omltdh3clo"
+        },
+        {
+          url: "https://res.cloudinary.com/jim-fuhrman-the-freelancer/image/upload/v1638891493/YelpCamp/bubbcwnzbprmus0z6xr0.jpg",
+          filename: "YelpCamp/bubbcwnzbprmus0z6xr0"
+        }
+      ]
     })
     await camp.save()
   }
