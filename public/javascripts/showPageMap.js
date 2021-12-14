@@ -4,7 +4,13 @@ const map = new mapboxgl.Map({
   container: "map",
   style: "mapbox://styles/mapbox/streets-v11",
   center: campground.geometry.coordinates,
-  zoom: 8
+  zoom: 10
 })
 
-let marker = new mapboxgl.Marker().setLngLat([(-74.5, 40)]).addTo(map)
+map.addControl(new mapboxgl.NavigationControl())
+
+/*let popUp = new mapboxg1.Popup({ offset: 25 }) */
+new mapboxgl.Marker()
+  .setLngLat(campground.geometry.coordinates)
+  .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(`<h3>${campground.title}</h3>`))
+  .addTo(map)
