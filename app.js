@@ -22,7 +22,12 @@ const userRoutes = require("./routes/users")
 const campgroundRoutes = require("./routes/campgrounds")
 const reviewRoutes = require("./routes/reviews")
 
-mongoose.connect("mongodb://localhost:27017/yelp-camp", {
+const MongoStore = require("connect-mongo")
+const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/yelp-camp"
+// mongoose.connect("mongodb://localhost:27017/yelp-camp", {
+
+//mongoose.connect(dbUrl, {
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   /*useCreateIndex: true,*/ /* This line causes big problems. */
   useUnifiedTopology: true /* This line causes big problems. */ /* This line causes big problems. */
@@ -49,9 +54,25 @@ app.use(methodOverride("_method"))
 app.use(express.static(path.join(__dirname, "public")))
 app.use(mongoSanitize())
 
+const secret = process.env.SECRET || "thisshouldbeabettersecret"
+
+const store = new MongoStore({
+  mongoUrl: dbUrl,
+  secret: secret,
+  touchAfter: 24 * 60 * 60 /* this just says don't update session if its data hasn't changed. Only update it once a day or every 86,400 seconds. */,
+  crypto: {
+    secret: "squirrel"
+  }
+})
+
+store.on("error", function (e) {
+  console.log("session store error", e)
+})
+
 const sessionConfig = {
+  store,
   name: "session",
-  secret: "thisshouldbeabetersecret",
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -63,28 +84,6 @@ const sessionConfig = {
 }
 app.use(session(sessionConfig))
 app.use(flash())
-
-//app.use(helmet({ contentSecurityPolicy: false }))
-/*
-const scriptSrcUrls = ["https://stackpath.bootstrapcdn.com/", "https://api.tiles.mapbox.com/", "https://api.mapbox.com/", "https://kit.fontawesome.com/", "https://cdnjs.cloudflare.com/", "https://cdn.jsdelivr.net"]
-const styleSrcUrls = ["https://kit-free.fontawesome.com/", "https://stackpath.bootstrapcdn.com/", "https://api.mapbox.com/", "https://api.tiles.mapbox.com/", "https://fonts.googleapis.com/", "https://use.fontawesome.com/"]
-const connectSrcUrls = ["https://api.mapbox.com/", "https://a.tiles.mapbox.com/", "https://b.tiles.mapbox.com/", "https://events.mapbox.com/"]
-const fontSrcUrls = []
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: [],
-      connectSrc: ["'self'", ...connectSrcUrls],
-      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
-      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
-      workerSrc: ["'self'", "blob:"],
-      objectSrc: [],
-      imgSrc: ["'self'", "blob:", "data:", "https://res.cloudinary.com/jim-fuhrman-the-freelancer/", "https://images.unsplash.com/"],
-      fontSrc: ["'self'", ...fontSrcUrls]
-    }
-  })
-)
-*/
 
 const scriptSrcUrls = ["https://stackpath.bootstrapcdn.com/", "https://api.tiles.mapbox.com/", "https://api.mapbox.com/", "https://kit.fontawesome.com/", "https://cdnjs.cloudflare.com/", "https://cdn.jsdelivr.net"]
 //This is the array that needs added to
@@ -120,7 +119,7 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 app.use((req, res, next) => {
-  console.log(req.query)
+  /*console.log(req.query)*/
   res.locals.currentUser = req.user
   res.locals.success = req.flash("success")
   res.locals.error = req.flash("error")
