@@ -24,9 +24,8 @@ const reviewRoutes = require("./routes/reviews")
 
 const MongoStore = require("connect-mongo")
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/yelp-camp"
-// mongoose.connect("mongodb://localhost:27017/yelp-camp", {
+const testDbUrl = "mongodb://localhost:27017/yelp-camp"
 
-//mongoose.connect(dbUrl, {
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   /*useCreateIndex: true,*/ /* This line causes big problems. */
@@ -58,7 +57,7 @@ const secret = process.env.SECRET || "thisshouldbeabettersecret"
 
 const store = new MongoStore({
   mongoUrl: dbUrl,
-  secret: secret,
+  secret,
   touchAfter: 24 * 60 * 60 /* this just says don't update session if its data hasn't changed. Only update it once a day or every 86,400 seconds. */,
   crypto: {
     secret: "squirrel"
