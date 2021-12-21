@@ -24,9 +24,8 @@ const mongoSanitize = require("express-mongo-sanitize")
 
 const MongoStore = require("connect-mongo")
 const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/yelp-camp"
-const testDbUrl = "mongodb://localhost:27017/yelp-camp"
 
-mongoose.connect(testDbUrl, {
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   /*useCreateIndex: true,*/ /* This line causes big problems. */
   useUnifiedTopology: true /* This line causes big problems. */ /* This line causes big problems. */
